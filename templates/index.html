@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carbon Footprint Predictor</title>
+</head>
+<body>
+    <h1>Carbon Footprint Predictor</h1>
+    
+    <!-- Initial Form -->
+    <form method="POST" action="/calculate">
+        <label>Where do you live?</label>
+        <select name="location" required>
+            <option value="us">USA</option>
+            <option value="np">Nepal</option>
+            <option value="de">Germany</option>
+        </select><br>
+
+        <label>Vehicle type?</label>
+        <select name="vehicle_type" required>
+            <option value="petrol">Petrol</option>
+            <option value="electric">Electric</option>
+        </select><br>
+
+        <label>Miles driven per week?</label>
+        <input type="number" name="miles" min="0" value="0" required><br>
+
+        <label>Meat-based meals per week?</label>
+        <input type="number" name="meat_meals" min="0" value="0" required><br>
+
+        <label>Electricity (kWh) per month?</label>
+        <input type="number" name="electricity" min="0" value="0" required><br>
+
+        <label>Flight distance per year (km)?</label>
+        <input type="number" name="flight_km" min="0" value="0" required><br>
+
+        <label>Train distance per week (km)?</label>
+        <input type="number" name="train_km" min="0" value="0" required><br>
+
+        <button type="submit">Predict My Footprint</button>
+    </form>
+
+    <!-- Results -->
+    {% if calculated %}
+    <div>
+        <h2>Your Results</h2>
+        <p>Current Footprint: {{ current }} kg CO2/week</p>
+        <p>Climate Hero Score: {{ score }}%</p>
+        <p>Tip: {{ tip }}</p>
+        <p>Future (Month 12): {{ future[-1] }} kg CO2/week</p>
+        <p>Scenario (Month 12, 50% miles): {{ scenario[-1] }} kg CO2/week</p>
+    </div>
+
+    <!-- "What If" Form (unlocks after calculation) -->
+    <h2>What If?</h2>
+    <form method="POST" action="/whatif">
+        <!-- Hidden fields to pass original data -->
+        <input type="hidden" name="original_current" value="{{ current }}">
+        <input type="hidden" name="original_score" value="{{ original_score }}">
+        <input type="hidden" name="original_scenario" value="{{ scenario[0] }}">
+
+        <label>Where do you live?</label>
+        <select name="location" required>
+            <option value="us">USA</option>
+            <option value="np">Nepal</option>
+            <option value="de">Germany</option>
+        </select><br>
+
+        <label>Vehicle type?</label>
+        <select name="vehicle_type" required>
+            <option value="petrol">Petrol</option>
+            <option value="electric">Electric</option>
+        </select><br>
+
+        <label>Miles driven per week?</label>
+        <input type="number" name="miles" min="0" value="0" required><br>
+
+        <label>Meat-based meals per week?</label>
+        <input type="number" name="meat_meals" min="0" value="0" required><br>
+
+        <label>Electricity (kWh) per month?</label>
+        <input type="number" name="electricity" min="0" value="0" required><br>
+
+        <label>Flight distance per year (km)?</label>
+        <input type="number" name="flight_km" min="0" value="0" required><br>
+
+        <label>Train distance per week (km)?</label>
+        <input type="number" name="train_km" min="0" value="0" required><br>
+
+        <button type="submit">What If?</button>
+    </form>
+
+    <!-- "What If" Results (if calculated) -->
+    {% if whatif_current is defined %}
+    <div>
+        <h2>What If Results</h2>
+        <p>New Current Footprint: {{ whatif_current }} kg CO2/week</p>
+        <p>New Climate Hero Score: {{ whatif_score }}%</p>
+        <p>New Future (Month 12): {{ whatif_future[-1] }} kg CO2/week</p>
+        <p>Score Difference: {{ whatif_score - original_score }}%</p>
+    </div>
+    {% endif %}
+    {% endif %}
+</body>
+</html>
