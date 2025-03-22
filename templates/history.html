@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Your Carbon Footprint History
+{% endblock %}
+
+{% block main %}
+    <h1 class="text-3xl font-bold text-blue-700 text-center mb-6">Your Carbon Footprint History</h1>
+
+    <!-- Chart -->
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+        <canvas id="footprintChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Back to Calc Button -->
+    <a href="/" class="block mt-6 text-center bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 transition duration-200">Back to Calc</a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const timestamps = {{ timestamps | tojson }};
+            const footprints = {{ footprints | tojson }};
+            const ctx = document.getElementById('footprintChart').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: timestamps,
+                    datasets: [{
+                        label: 'Carbon Footprint (tons CO2e)',
+                        data: footprints,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: { 
+                            title: { display: true, text: 'Date & Time' },
+                            ticks: { maxRotation: 45, minRotation: 45 }
+                        },
+                        y: { 
+                            title: { display: true, text: 'Footprint (tons CO2e)' }, 
+                            beginAtZero: true 
+                        }
+                    },
+                    plugins: {
+                        legend: { display: true, position: 'top' }
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

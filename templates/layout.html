@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js for your footprint graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <title>Sustainsync: {% block title %}{% endblock %}</title>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-white shadow-md p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-4xl font-bold text-green-700">Sustainsync</a>
+            <div class="space-x-4">
+                {% if session["user_id"] %}
+                    <a href="/history" class="text-green-600 hover:text-green-800 font-semibold">History</a>
+                    <a href="/logout" class="text-red-600 hover:text-red-800 font-semibold">Logout</a>
+                {% else %}
+                    <a href="/register" class="text-green-600 hover:text-green-800 font-semibold">Register</a>
+                    <a href="/login" class="text-green-600 hover:text-green-800 font-semibold">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    {% if get_flashed_messages() %}
+    <header>
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 text-center">
+            {{ get_flashed_messages() | join(" ") }}
+        </div>
+    </header>
+    {% endif %}
+
+    <main class="container mx-auto p-6 max-w-4xl">
+        {% block main %}{% endblock %}
+    </main>
+
+    <footer class="text-center text-gray-600 mb-5">
+        <p>&copy; 2025 Sustainsync. All rights reserved.</p>
+    </footer>
+</body>
+</html>
