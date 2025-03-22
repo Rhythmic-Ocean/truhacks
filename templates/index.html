@@ -1,104 +1,257 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Carbon Footprint Predictor</title>
+    <title>Sustainsync</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
-    <h1>Carbon Footprint Predictor</h1>
-    
-    <!-- Initial Form -->
-    <form method="POST" action="/calculate">
-        <label>Where do you live?</label>
-        <select name="location" required>
-            <option value="us">USA</option>
-            <option value="np">Nepal</option>
-            <option value="de">Germany</option>
-        </select><br>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-6 max-w-4xl">
+        <h1 class="text-4xl font-bold text-center text-green-700 mb-8">Sustainsync</h1>
+        
+        
+        <form method="POST" action="/calculate" class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">Where do you live?</label>
+                    <select name="location" required class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="us">USA</option>
+                        <option value="np">Nepal</option>
+                        <option value="de">Germany</option>
+                    </select>
+                </div>
 
-        <label>Vehicle type?</label>
-        <select name="vehicle_type" required>
-            <option value="petrol">Petrol</option>
-            <option value="electric">Electric</option>
-        </select><br>
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">Vehicle type?</label>
+                    <select name="vehicle_type" required class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="petrol">Petrol</option>
+                        <option value="electric">Electric</option>
+                    </select>
+                </div>
 
-        <label>Miles driven per week?</label>
-        <input type="number" name="miles" min="0" value="0" required><br>
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">Miles driven per week?</label>
+                    <input type="number" name="miles" min="0" value="0" required class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
 
-        <label>Meat-based meals per week?</label>
-        <input type="number" name="meat_meals" min="0" value="0" required><br>
+                <div>
+                    <label class="flex items-center text-gray-700 font-semibold mb-2">
+                        <input type="checkbox" name="consume_meat" id="consume_meat_initial" class="mr-2">
+                        Do you consume meat?
+                    </label>
+                    <div id="meat_types_initial" style="display: none;" class="ml-6 space-y-2">
+                        <div>
+                            <label class="block text-gray-600">Chicken meals per week:</label>
+                            <input type="number" name="chicken_meals" min="0" value="0" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-600">Beef meals per week:</label>
+                            <input type="number" name="beef_meals" min="0" value="0" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-600">Other meats per week:</label>
+                            <input type="number" name="other_meals" min="0" value="0" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                    </div>
+                </div>
 
-        <label>Electricity (kWh) per month?</label>
-        <input type="number" name="electricity" min="0" value="0" required><br>
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">Electricity (kWh) per month?</label>
+                    <input type="number" name="electricity" min="0" value="0" required class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
 
-        <label>Flight distance per year (km)?</label>
-        <input type="number" name="flight_km" min="0" value="0" required><br>
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">Flight distance per year (km)?</label>
+                    <input type="number" name="flight_km" min="0" value="0" required class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
 
-        <label>Train distance per week (km)?</label>
-        <input type="number" name="train_km" min="0" value="0" required><br>
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">Train distance per week (km)?</label>
+                    <input type="number" name="train_km" min="0" value="0" required class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
 
-        <button type="submit">Predict My Footprint</button>
-    </form>
+                <button type="submit" class="w-full bg-green-600 text-white p-3 rounded-md hover:bg-green-700 transition">Predict My Footprint</button>
+            </div>
+        </form>
 
-    <!-- Results -->
-    {% if calculated %}
-    <div>
-        <h2>Your Results</h2>
-        <p>Current Footprint: {{ current }} kg CO2/week</p>
-        <p>Climate Hero Score: {{ score }}%</p>
-        <p>Tip: {{ tip }}</p>
-        <p>Future (Month 12): {{ future[-1] }} kg CO2/week</p>
-        <p>Scenario (Month 12, 50% miles): {{ scenario[-1] }} kg CO2/week</p>
+        <!-- Results -->
+        {% if calculated %}
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-2xl font-bold text-green-700 mb-4">Your Results</h2>
+            <div class="space-y-2">
+                <p><span class="font-semibold">Current Footprint:</span> {{ current }} kg CO2/week</p>
+                <p><span class="font-semibold">Climate Hero Score:</span> {{ score }}%</p>
+                <p><span class="font-semibold">Tip:</span> {{ tip }}</p>
+                <p><span class="font-semibold">Future (Month 12):</span> {{ future[-1] }} kg CO2/week</p>
+                <p><span class="font-semibold">Scenario (Month 12, 50% miles):</span> {{ scenario[-1] }} kg CO2/week</p>
+            </div>
+            <canvas id="futureChart" class="mt-6"></canvas>
+        </div>
+
+        <!-- "What If" Form -->
+        <h2 class="text-2xl font-bold text-green-700 mb-4">What If?</h2>
+        <form method="POST" action="/whatif" class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <input type="hidden" name="original_current" value="{{ current }}">
+            <input type="hidden" name="original_score" value="{{ original_score }}">
+            <input type="hidden" name="original_scenario" value="{{ scenario[0] }}">
+
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">Where do you live?</label>
+                    <select name="location" required class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="us">USA</option>
+                        <option value="np">Nepal</option>
+                        <option value="de">Germany</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">Vehicle type?</label>
+                    <select name="vehicle_type" required class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="petrol">Petrol</option>
+                        <option value="electric">Electric</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">Miles driven per week?</label>
+                    <input type="number" name="miles" min="0" value="0" required class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+
+                <div>
+                    <label class="flex items-center text-gray-700 font-semibold mb-2">
+                        <input type="checkbox" name="consume_meat" id="consume_meat_whatif" class="mr-2">
+                        Do you consume meat?
+                    </label>
+                    <div id="meat_types_whatif" style="display: none;" class="ml-6 space-y-2">
+                        <div>
+                            <label class="block text-gray-600">Chicken meals per week:</label>
+                            <input type="number" name="chicken_meals" min="0" value="0" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-600">Beef meals per week:</label>
+                            <input type="number" name="beef_meals" min="0" value="0" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-600">Other meats per week:</label>
+                            <input type="number" name="other_meals" min="0" value="0" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">Electricity (kWh) per month?</label>
+                    <input type="number" name="electricity" min="0" value="0" required class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">Flight distance per year (km)?</label>
+                    <input type="number" name="flight_km" min="0" value="0" required class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">Train distance per week (km)?</label>
+                    <input type="number" name="train_km" min="0" value="0" required class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+
+                <button type="submit" class="w-full bg-green-600 text-white p-3 rounded-md hover:bg-green-700 transition">What If?</button>
+            </div>
+        </form>
+
+        {% if whatif_current is defined %}
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold text-green-700 mb-4">What If Results</h2>
+            <div class="space-y-2">
+                <p><span class="font-semibold">New Current Footprint:</span> {{ whatif_current }} kg CO2/week</p>
+                <p><span class="font-semibold">New Climate Hero Score:</span> {{ whatif_score }}%</p>
+                <p><span class="font-semibold">New Future (Month 12):</span> {{ whatif_future[-1] }} kg CO2/week</p>
+                <p><span class="font-semibold">Score Difference:</span> {{ whatif_score - original_score }}%</p>
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
     </div>
 
-    <!-- "What If" Form (unlocks after calculation) -->
-    <h2>What If?</h2>
-    <form method="POST" action="/whatif">
-        <!-- Hidden fields to pass original data -->
-        <input type="hidden" name="original_current" value="{{ current }}">
-        <input type="hidden" name="original_score" value="{{ original_score }}">
-        <input type="hidden" name="original_scenario" value="{{ scenario[0] }}">
+    <!-- Pass Jinja2 data to JS -->
+    <script>
+        const appData = {
+            calculated: {{ calculated | default(false) | tojson }},
+            future: {{ future | default([]) | tojson }},
+            whatifFuture: {{ whatif_future | default([]) | tojson }}
+        };
+    </script>
 
-        <label>Where do you live?</label>
-        <select name="location" required>
-            <option value="us">USA</option>
-            <option value="np">Nepal</option>
-            <option value="de">Germany</option>
-        </select><br>
+    <!-- Main JS -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            function toggleMeatTypes(checkboxId, divId) {
+                const checkbox = document.getElementById(checkboxId);
+                const div = document.getElementById(divId);
+                if (!checkbox || !div) {
+                    console.error(`Element not found: checkbox=${checkboxId}, div=${divId}`);
+                    return;
+                }
+                checkbox.addEventListener("change", function() {
+                    div.style.display = checkbox.checked ? "block" : "none";
+                    console.log(`${checkboxId} toggled: ${checkbox.checked}`);
+                });
+                div.style.display = checkbox.checked ? "block" : "none";
+            }
+            toggleMeatTypes("consume_meat_initial", "meat_types_initial");
+            toggleMeatTypes("consume_meat_whatif", "meat_types_whatif");
 
-        <label>Vehicle type?</label>
-        <select name="vehicle_type" required>
-            <option value="petrol">Petrol</option>
-            <option value="electric">Electric</option>
-        </select><br>
+            if (appData.calculated) {
+                const canvas = document.getElementById('futureChart');
+                if (!canvas) {
+                    console.error("Canvas #futureChart not found");
+                } else {
+                    const ctx = canvas.getContext('2d');
+                    const futureData = appData.future;
+                    const whatifData = appData.whatifFuture;
+                    const labels = Array.from({length: 12}, (_, i) => `Month ${i + 1}`);
 
-        <label>Miles driven per week?</label>
-        <input type="number" name="miles" min="0" value="0" required><br>
+                    console.log("Future Data:", futureData);
+                    console.log("What If Data:", whatifData);
 
-        <label>Meat-based meals per week?</label>
-        <input type="number" name="meat_meals" min="0" value="0" required><br>
+                    const datasets = [
+                        {
+                            label: 'Current Future Footprint',
+                            data: futureData,
+                            borderColor: 'blue',
+                            fill: false
+                        }
+                    ];
+                    if (whatifData.length > 0) {
+                        datasets.push({
+                            label: 'What If Future Footprint',
+                            data: whatifData,
+                            borderColor: 'green',
+                            fill: false
+                        });
+                    }
 
-        <label>Electricity (kWh) per month?</label>
-        <input type="number" name="electricity" min="0" value="0" required><br>
-
-        <label>Flight distance per year (km)?</label>
-        <input type="number" name="flight_km" min="0" value="0" required><br>
-
-        <label>Train distance per week (km)?</label>
-        <input type="number" name="train_km" min="0" value="0" required><br>
-
-        <button type="submit">What If?</button>
-    </form>
-
-    <!-- "What If" Results (if calculated) -->
-    {% if whatif_current is defined %}
-    <div>
-        <h2>What If Results</h2>
-        <p>New Current Footprint: {{ whatif_current }} kg CO2/week</p>
-        <p>New Climate Hero Score: {{ whatif_score }}%</p>
-        <p>New Future (Month 12): {{ whatif_future[-1] }} kg CO2/week</p>
-        <p>Score Difference: {{ whatif_score - original_score }}%</p>
-    </div>
-    {% endif %}
-    {% endif %}
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: datasets
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: { display: true, text: 'kg CO2/week' }
+                                },
+                                x: { title: { display: true, text: 'Months' } }
+                            },
+                            plugins: {
+                                legend: { display: true }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    </script>
 </body>
 </html>
